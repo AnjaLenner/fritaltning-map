@@ -50,14 +50,14 @@
 
         data.forEach((row) => {
           // Hämta lat/lon, försök rensa mellanslag
-          const lat = parseFloat(row["Latitud (Exempelvis 60.123456)"]?.trim());
-          const lon = parseFloat(row["Longitud (Exempelvis 15.654321)"]?.trim());
+          const lat = parseFloat(row["lat"]?.trim());
+          const lon = parseFloat(row["lng"]?.trim());
 
           if (!isNaN(lat) && !isNaN(lon)) {
             const images = [];
-            if (row["Bildlänk 1"]) images.push(row["Bildlänk 1"].trim());
-            if (row["Bildlänk 2"]) images.push(row["Bildlänk 2"].trim());
-            if (row["Bildlänk 3"]) images.push(row["Bildlänk 3"].trim());
+            if (row["image link 1"]) images.push(row["image link 1"].trim());
+            if (row["image link 2"]) images.push(row["image link 2"].trim());
+            if (row["image link 3"]) images.push(row["image link 3"].trim());
 
             const imageHtml = images
               .map(
@@ -68,16 +68,19 @@
 
             const popup = `
               <div class="popup-content">
-                <strong>${row["Namn på plats"] || "Namnlös plats"}</strong><br>
-                <em>${row["Län där plats ligger"] || ""}</em><br>
-                <em>${row["Faciliteter"] || ""}</em><br>
-                <p>${row["Beskrivning / Kommentar"] || ""}</p>
-                <strong>Kostnad:</strong> ${
+                <strong>${row["name"] || "Namnlös plats"}</strong><br>
+                <em>${row["area"] || ""}</em><br>
+                <em>${row["lat"] || ""}</em><br>
+                <em>${row["lng"] || ""}</em><br>
+                <em>${row["facilities"] || ""}</em><br>
+               <em>${row["image link 1"] || ""}</em><br> 
+                <p>${row["description"] || ""}</p>
+                <strong>cost:</strong> ${
                   row["Kostar det något att stå här? Om JA skriv summa under alternativ \"annat\""] || "Nej"
                 }<br>
-                <a href="${row["Länk till Google Maps"] || "#"}" target="_blank" rel="noopener">Visa på Google Maps</a><br>
-                <em>Närmaste mataffär:</em> ${
-                  row["Hur långt bort ligger närmsta mataffär?"] || "Okänt"
+                <a href="${row["link to google maps"] || "#"}" target="_blank" rel="noopener">Visa på Google Maps</a><br>
+              
+                  row["how far away from nearest grocery store"] || "Okänt"
                 }<br>
                 <div class="popup-images">${imageHtml}</div>
               </div>

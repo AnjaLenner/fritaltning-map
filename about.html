@@ -2,61 +2,102 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8" />
-  <title>Om sidan</title>
+  <title>Om Fritälta i Sverige</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Google Fonts: Roboto -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
+      color: #333;
+    }
+    nav {
+      background: #eee;
+      padding: 10px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    nav a {
+      margin: 0 15px;
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    h1, h2 {
+      font-weight: 700;
+      color: #222;
+    }
+    ul {
+      margin-left: 20px;
+    }
+    a {
+      color: #0066cc;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
 
-<nav style="background:#eee; padding:10px; text-align:center;">
-  <a href="index.html" style="margin:0 15px; text-decoration:none; color:#333;">Hem</a>
-  <a href="about.html" style="margin:0 15px; text-decoration:none; color:#333;">Om</a>
+<nav>
+  <a href="index.html">Hem</a>
+  <a href="about.html">Om</a>
 </nav>
 
-<h1>Om denna webbplats</h1>
+<h1>🏕️ Fritälta i Sverige – Gemensam karta för fricampingplatser</h1>
 
-<p>🏕️ Fritälta i Sverige – Gemensam karta för fricampingplatser</p> 
-  <p> Fritälta i Sverige är en interaktiv webbsida där alla kan tipsa om sina bästa platser för att fritälta i Sverige. </p>  
- <p> Målet är att tillsammans bygga en karta över vackra, trygga och tillgängliga platser för övernattning i naturen – helt gratis.</p>
+<p>Fritälta i Sverige är en interaktiv webbsida där alla kan tipsa om sina bästa platser för att fritälta i Sverige. Målet är att tillsammans bygga en karta över vackra, trygga och tillgängliga platser för övernattning i naturen – helt gratis.</p>
 
-💡 Syfte Sidan är skapad för dig som vill uppleva Sveriges natur på ett enkelt och hållbart sätt – och för att vi ska kunna hjälpa varandra att hitta bra tältplatser vid t.ex. sjöar, fjäll, skogsbryn eller rastplatser.
+<h2>💡 Syfte</h2>
+<p>Sidan är skapad för dig som vill uppleva Sveriges natur på ett enkelt och hållbart sätt – och för att vi ska kunna hjälpa varandra att hitta bra tältplatser vid t.ex. sjöar, fjäll, skogsbryn eller rastplatser.</p>
 
-🌍 Så fungerar det Alla kan bidra med nya platser via ett enkelt formulär.
+<h2>🌍 Så fungerar det</h2>
+<p>Alla kan bidra med nya platser via ett enkelt formulär.</p>
+<p>Informationen hamnar automatiskt i ett Google Sheet och visas direkt på kartan.</p>
+<p>Varje plats innehåller:</p>
+<ul>
+  <li>Koordinater (GPS)</li>
+  <li>Beskrivning</li>
+  <li>Eventuella bilder</li>
+  <li>Information om faciliteter (t.ex. vatten, eldstad, toalett)</li>
+</ul>
 
-Informationen hamnar automatiskt i ett Google Sheet och visas direkt på kartan.
+<h2>🧭 Så här bidrar du</h2>
+<p>Klicka på länken: <a href="DIN_FORMULÄRLÄNK_HÄR" target="_blank" rel="noopener">Lägg till en plats</a></p>
+<p>Fyll i information om platsen du vill tipsa om.</p>
+<p>Skicka in – klart! Den dyker upp på kartan inom kort.</p>
 
-Varje plats innehåller:
+<h2>🛠️ Teknisk info</h2>
+<p>Den här sidan är byggd med:</p>
+<ul>
+  <li>Leaflet.js – för kartan</li>
+  <li>Google Sheets – databas för inskickade platser</li>
+  <li>Google Forms – insamling av nya tips</li>
+</ul>
 
-Koordinater (GPS)
+<h2>📌 Regler & ansvar</h2>
+<p>Tänk på att:</p>
+<ul>
+  <li>Endast tipsa om platser där det är tillåtet att fritälta enligt allemansrätten.</li>
+  <li>Visa hänsyn till naturen, markägare och andra besökare.</li>
+  <li>Lämna platsen i bättre skick än du fann den.</li>
+</ul>
 
-Beskrivning
-
-Eventuella bilder
-
-Information om faciliteter (t.ex. vatten, eldstad, toalett)
-
-🧭 Så här bidrar du Klicka på länken: Lägg till en plats (byt ut med din faktiska formulärlänk)
-
-Fyll i information om platsen du vill tipsa om.
-
-Skicka in – klart! Den dyker upp på kartan inom kort.
-
-🛠️ Teknisk info Den här sidan är byggd med:
-
-Leaflet.js – för kartan
-
-Google Sheets – databas för inskickade platser
-
-Google Forms – insamling av nya tips
-
-📌 Regler & ansvar Tänk på att:
-
-Endast tipsa om platser där det är tillåtet att fritälta enligt allemansrätten.
-
-Visa hänsyn till naturen, markägare och andra besökare.
-
-Lämna platsen i bättre skick än du fann den.
-
-🤝 Licens och bidrag Det här är ett ideellt community-projekt. Du får gärna bidra med kod, idéer eller spridning av kartan! Vill du annonsera på webbsidan? Hör av dig! Vill du vara med och utveckla projektet vidare? Hör av dig!</p>
+<h2>🤝 Licens och bidrag</h2>
+<p>Det här är ett ideellt community-projekt.<br />
+Du får gärna bidra med kod, idéer eller spridning av kartan!<br />
+Vill du vara med och utveckla projektet vidare? Hör av dig!</p>
 
 </body>
 </html>

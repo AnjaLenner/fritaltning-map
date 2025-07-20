@@ -17,6 +17,10 @@
       margin: 5px;
       border-radius: 5px;
     }
+    .popup-content a {
+      color: blue;
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -53,10 +57,16 @@
               .join("");
 
             const popup = `
-              <strong>${row["Namn på plats"]}</strong><br>
-              <em>${row["Faciliteter"] || ""}</em><br>
-              ${row["Beskrivning / Kommentar"] || ""}<br>
-              <div class="popup-images">${imageHtml}</div>
+              <div class="popup-content">
+                <strong>${row["Namn på plats"]}</strong><br>
+                <em>${row["Län där plats ligger"] || ""}</em><br>
+                <em>${row["Faciliteter"] || ""}</em><br>
+                <p>${row["Beskrivning / Kommentar"] || ""}</p>
+                <strong>Kostnad:</strong> ${row["Kostar det något att stå här? Om JA skriv summa under alternativ \"annat\""] || "Nej"}<br>
+                <a href="${row["Länk till Google Maps"]}" target="_blank" rel="noopener">Visa på Google Maps</a><br>
+                <em>Närmaste mataffär:</em> ${row["Hur långt bort ligger närmsta mataffär?"] || "Okänt"}<br>
+                <div class="popup-images">${imageHtml}</div>
+              </div>
             `;
 
             L.marker([lat, lon])

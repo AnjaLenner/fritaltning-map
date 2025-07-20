@@ -49,9 +49,9 @@
         console.log("Data från Google Sheet:", data);
 
         data.forEach((row) => {
-          // Hämta lat/lon, försök rensa mellanslag
-          const lat = parseFloat(row["lat"]?.trim());
-          const lon = parseFloat(row["lng"]?.trim());
+          // Hämta Latitud/Longitud, försök rensa mellanslag
+          const lat = parseFloat(row["Latitud"]?.trim());
+          const lon = parseFloat(row["Longitud"]?.trim());
 
           if (!isNaN(lat) && !isNaN(lon)) {
             const images = [];
@@ -68,20 +68,22 @@
 
             const popup = `
               <div class="popup-content">
-                <strong>${row["name"] || "Namnlös plats"}</strong><br>
-                <em>${row["area"] || ""}</em><br>
-                <em>${row["lat"] || ""}</em><br>
-                <em>${row["lng"] || ""}</em><br>
-                <em>${row["facilities"] || ""}</em><br>
+                <strong>${row["Namn"] || "Namnlös plats"}</strong><br>
+                <em>${row["Län"] || ""}</em><br>
+                <em>${row["Latitud"] || ""}</em><br>
+                <em>${row["Longitud"] || ""}</em><br>
+                <em>${row["Faciliteter"] || ""}</em><br>
                <em>${row["image link 1"] || ""}</em><br> 
-                <p>${row["description"] || ""}</p>
+                <p>${row["Beskrivning"] || ""}</p>
                 <strong>cost:</strong> ${
                   row["Kostar det något att stå här? Om JA skriv summa under alternativ \"annat\""] || "Nej"
                 }<br>
-                <a href="${row["link to google maps"] || "#"}" target="_blank" rel="noopener">Visa på Google Maps</a><br>
+                <a href="${row["Länk till Google Maps"] || "#"}" target="_blank" rel="noopener">Visa på Google Maps</a><br>
               
-                  row["how far away from nearest grocery store"] || "Okänt"
+                  row["Hur långt bort ligger närmsta mataffär?"] || "Okänt"
                 }<br>
+                <em>${row["image link 2"] || ""}</em><br> 
+                <em>${row["image link 3"] || ""}</em><br> 
                 <div class="popup-images">${imageHtml}</div>
               </div>
             `;

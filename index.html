@@ -1,13 +1,22 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="sv">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8" />
   <title>Fritältningsplatser i Sverige</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
   <style>
-    #map { height: 100vh; }
+    #map {
+      height: 100vh;
+    }
+    .popup-images img {
+      width: 150px;
+      margin: 5px;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
@@ -16,34 +25,47 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/tabletop@1.6.0/tabletop.js"></script>
   <script>
-    const map = L.map('map').setView([61.5, 15], 5);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
+    const map = L.map("map").setView([61.5, 15], 5);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap contributors",
     }).addTo(map);
 
-    // 🔁 Replace this with your actual Google Sheet ID
     const sheetID = "1s1iy2hom4fkqhv9uLZLQ5OvA4Drv2O2qA86hB-qJOd0";
 
     Tabletop.init({
       key: sheetID,
       simpleSheet: true,
-      callback: function(data) {
-        data.forEach(row => {
-          const lat = parseFloat(row["Latitud"]);
-          const lon = parseFloat(row["Longitud"]);
+      callback: function (data) {
+        data.forEach((row) => {
+          const lat = parseFloat(row["Latitud (Exempelvis 60.123456)"]);
+          const lon = parseFloat(row["Longitud (Exempelvis 15.654321)"]);
           if (!isNaN(lat) && !isNaN(lon)) {
+            const images = [];
+            if (row["Bildlänk 1"]) images.push(row["Bildlänk 1"]);
+            if (row["Bildlänk 2"]) images.push(row["Bildlänk 2"]);
+            if (row["Bildlänk 3"]) images.push(row["Bildlänk 3"]);
+
+            const imageHtml = images
+              .map(
+                (url) =>
+                  `<img src="${url}" alt="Bild på plats" />`
+              )
+              .join("");
+
             const popup = `
               <strong>${row["Namn på plats"]}</strong><br>
               <em>${row["Faciliteter"] || ""}</em><br>
               ${row["Beskrivning / Kommentar"] || ""}<br>
-              ${row["Bildlänk (valfritt)"] ? `<img src="${row["Bildlänk (valfritt)"]}" width="200">` : ""}
+              <div class="popup-images">${imageHtml}</div>
             `;
+
             L.marker([lat, lon])
               .addTo(map)
               .bindPopup(popup);
           }
         });
-      }
+      },
+      simpleSheet: true,
     });
   </script>
 </body>

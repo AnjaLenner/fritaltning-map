@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Fritältningsplatser i Sverige</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    #map { height: 100vh; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/tabletop@1.6.0/tabletop.js"></script>
+  <script>
+    const map = L.map('map').setView([61.5, 15], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // 🔁 Replace this with your actual Google Sheet ID
+    const sheetID = "REPLACE_WITH_YOUR_SHEET_ID";
+
+    Tabletop.init({
+      key: sheetID,
+      simpleSheet: true,
+      callback: function(data) {
+        data.forEach(row => {
+          const lat = parseFloat(row["Latitud"]);
+          const lon = parseFloat(row["Longitud"]);
+          if (!isNaN(lat) && !isNaN(lon)) {
+            const popup = `
+              <strong>${row["Namn på plats"]}</strong><br>
+              <em>${row["Faciliteter"] || ""}</em><br>
+              ${row["Beskrivning / Kommentar"] || ""}<br>
+              ${row["Bildlänk (valfritt)"] ? `<img src="${row["Bildlänk (valfritt)"]}" width="200">` : ""}
+            `;
+            L.marker([lat, lon])
+              .addTo(map)
+              .bindPopup(popup);
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

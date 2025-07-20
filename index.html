@@ -1,55 +1,71 @@
 <!DOCTYPE html>
-<html>
+<html lang="sv">
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   <title>Fritältningsplatser i Sverige</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-+NcazgiH7zzGcGPlD5HSSzXH+kSzHj6wz8aZfX3k4nE="
+    crossorigin=""
+  />
   <style>
-    #map { height: 100vh; }
-    .popup-content img { width: 100%; max-height: 200px; object-fit: cover; margin-bottom: 8px; }
-    .popup-content a { display: block; margin-top: 5px; color: blue; text-decoration: underline; }
-    .popup-content strong { display: block; margin-top: 8px; }
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+    .popup-images img {
+      max-width: 100%;
+      height: auto;
+      margin-top: 5px;
+    }
   </style>
 </head>
 <body>
   <div id="map"></div>
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-o9N1j6kQoy0WLKqz93m+nUvNcIPuOHZ2Iyb7fLKmQzU=" crossorigin=""></script>
   <script>
-    const map = L.map('map').setView([62.0, 15.0], 5);
+    const sheetUrl = "AKfycbxWRGKLn-msMKHcMwPKKKT2iPla9PxgpwUIiDJTQHVPcjK4ak9mXvaNLXn8r73jcIfQ"; // Ersätt med din Apps Script URL
+
+    const map = L.map('map').setView([62.0, 15.0], 5); // Centralt i Sverige
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      attribution: '&copy; OpenStreetMap'
+      attribution: '© OpenStreetMap-bidragsgivare'
     }).addTo(map);
 
-    fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec')
+    fetch(sheetUrl)
       .then(response => response.json())
       .then(data => {
-        data.forEach(place => {
-          const popup = `
-            <div class="popup-content">
-              <strong>${place.name}</strong>
-              <p>${place.description || 'Ingen beskrivning tillgänglig.'}</p>
-              ${place.image1 ? `<img src="${place.image1}" alt="Bild 1">` : ''}
-              ${place.image2 ? `<img src="${place.image2}" alt="Bild 2">` : ''}
-              ${place.image3 ? `<img src="${place.image3}" alt="Bild 3">` : ''}
-              <strong>Faciliteter:</strong> ${place.facilities || 'Ej angivet'}
-              <strong>Län:</strong> ${place.county || 'Ej angivet'}
-              <strong>Kostar att stå här?:</strong> ${place.cost || 'Ej angivet'}
-              ${place.cost_detail ? `<strong>Kostnad:</strong> ${place.cost_detail}` : ''}
-              ${place.storeDistance ? `<strong>Mataffär:</strong> ${place.storeDistance}` : ''}
-              ${place.googleMapsLink ? `<a href="${place.googleMapsLink}" target="_blank">Visa i Google Maps</a>` : ''}
-            </div>
-          `;
+        data.forEach(entry => {
+          const lat = parseFloat(entry.latitude);
+          const lng = parseFloat(entry.longitude);
+          if (!isNaN(lat) && !isNaN(lng)) {
+            const popupContent = `
+              <strong>${entry.platsnamn}</strong><br>
+              <em>Län:</em> ${entry.lan}<br>
+              <em>Beskrivning:</em> ${entry.beskrivning}<br>
+              <em>Faciliteter:</em> ${entry.faciliteter}<br>
+              <em>Kostar det?</em> ${entry.kostnad || 'Nej'}<br>
+              ${entry.kostnad_annat ? `<em>Kostnad:</em> ${entry.kostnad_annat} kr<br>` : ""}
+              <em>Närmsta mataffär:</em> ${entry.mataffar || 'Okänt'}<br>
+              ${entry.google_maps_lank ? `<a href="${entry.google_maps_lank}" target="_blank">Visa i Google Maps</a><br>` : ""}
+              <div class="popup-images">
+                ${entry.bild1 ? `<img src="${entry.bild1}" alt="Bild 1" />` : ""}
+                ${entry.bild2 ? `<img src="${entry.bild2}" alt="Bild 2" />` : ""}
+                ${entry.bild3 ? `<img src="${entry.bild3}" alt="Bild 3" />` : ""}
+              </div>
+            `;
 
-          L.marker([place.lat, place.lng])
-            .addTo(map)
-            .bindPopup(popup);
+            L.marker([lat, lng])
+              .addTo(map)
+              .bindPopup(popupContent);
+          }
         });
       })
-      .catch(err => {
-        console.error('Fel vid hämtning av data:', err);
+      .catch(error => {
+        console.error("Fel vid hämtning av data från Google Sheets:", error);
       });
   </script>
 </body>

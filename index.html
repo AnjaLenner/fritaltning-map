@@ -40,6 +40,12 @@
       display: block;
       margin-bottom: 5px;
     }
+
+    .popup-images img {
+      max-width: 100px;
+      margin: 3px;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
@@ -67,16 +73,31 @@
           const lat = parseFloat(place["Latitud"]);
           const lng = parseFloat(place["Longitud"]);
           if (!isNaN(lat) && !isNaN(lng)) {
-            const marker = L.marker([lat, lng], { icon: L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png', iconSize: [32, 32], iconAnchor: [16, 32] }) }).addTo(map);
+            const images = [];
+            if (place["Bildlänk 1"]) images.push(place["Bildlänk 1"]);
+            if (place["Bildlänk 2"]) images.push(place["Bildlänk 2"]);
+            if (place["Bildlänk 3"]) images.push(place["Bildlänk 3"]);
+
+            const imagesHtml = images.map(url => `<img src="${url}" alt="Bild på plats">`).join("");
+
+            const marker = L.marker([lat, lng], { 
+              icon: L.icon({ 
+                iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png', 
+                iconSize: [32, 32], 
+                iconAnchor: [16, 32] 
+              }) 
+            }).addTo(map);
+
             const popupContent = `
               <div class="popup-content">
-                 <p><strong>${place["Platsens namn"]}</strong> </p>
+                <p><strong>${place["Platsens namn"] || "Namnlös plats"}</strong></p>
                 <p><strong>Län:</strong> ${place["Län"] || "Okänt"}</p>
                 <p><strong>Faciliteter:</strong> ${place["Faciliteter"] || "Ej angivet"}</p>
                 <p><strong>Kostar det att tälta?</strong> ${place["Kostar det att tälta här?"] || "Nej"}</p>
                 <p><strong>Avstånd till närmaste mataffär:</strong> ${place["Avstånd till närmaste mataffär:"] || "Ej angivet"}</p>
                 <p><strong>Beskrivning:</strong> ${place["Beskrivning"] || ""}</p>
-                <p><a href="${place["Länk till google maps"]}" target="_blank">Visa på Google Maps</a></p>
+                <p><a href="${place["Länk till google maps"]}" target="_blank" rel="noopener">Visa på Google Maps</a></p>
+                <div class="popup-images">${imagesHtml}</div>
               </div>
             `;
             marker.bindPopup(popupContent);

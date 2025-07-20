@@ -1,104 +1,56 @@
 <!DOCTYPE html>
-<html lang="sv">
+<html>
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8">
   <title>Fritältningsplatser i Sverige</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
-    #map {
-      height: 100vh;
-    }
-    .popup-images img {
-      width: 150px;
-      margin: 5px;
-      border-radius: 5px;
-    }
-    .popup-content a {
-      color: blue;
-      text-decoration: underline;
-    }
+    #map { height: 100vh; }
+    .popup-content img { width: 100%; max-height: 200px; object-fit: cover; margin-bottom: 8px; }
+    .popup-content a { display: block; margin-top: 5px; color: blue; text-decoration: underline; }
+    .popup-content strong { display: block; margin-top: 8px; }
   </style>
 </head>
 <body>
-  <nav style="background:#eee; padding:10px; text-align:center;">
-    <a href="index.html" style="margin:0 15px; text-decoration:none; color:#333;">Karta</a>
-    <a href="about.html" style="margin:0 15px; text-decoration:none; color:#333;">Om</a>
-  </nav>
-
   <div id="map"></div>
-
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/tabletop@1.6.0/tabletop.js"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    const map = L.map("map").setView([61.5, 15], 6);
+    const map = L.map('map').setView([62.0, 15.0], 5);
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "&copy; OpenStreetMap contributors",
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '&copy; OpenStreetMap'
     }).addTo(map);
 
-    const sheetID = "1s1iy2hom4fkqhv9uLZLQ5OvA4Drv2O2qA86hB-qJOd0";
+    fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec')
+      .then(response => response.json())
+      .then(data => {
+        data.forEach(place => {
+          const popup = `
+            <div class="popup-content">
+              <strong>${place.name}</strong>
+              <p>${place.description || 'Ingen beskrivning tillgänglig.'}</p>
+              ${place.image1 ? `<img src="${place.image1}" alt="Bild 1">` : ''}
+              ${place.image2 ? `<img src="${place.image2}" alt="Bild 2">` : ''}
+              ${place.image3 ? `<img src="${place.image3}" alt="Bild 3">` : ''}
+              <strong>Faciliteter:</strong> ${place.facilities || 'Ej angivet'}
+              <strong>Län:</strong> ${place.county || 'Ej angivet'}
+              <strong>Kostar att stå här?:</strong> ${place.cost || 'Ej angivet'}
+              ${place.cost_detail ? `<strong>Kostnad:</strong> ${place.cost_detail}` : ''}
+              ${place.storeDistance ? `<strong>Mataffär:</strong> ${place.storeDistance}` : ''}
+              ${place.googleMapsLink ? `<a href="${place.googleMapsLink}" target="_blank">Visa i Google Maps</a>` : ''}
+            </div>
+          `;
 
-    Tabletop.init({
-      key: sheetID,
-      simpleSheet: true,
-      callback: function (data) {
-        console.log("Data från Google Sheet:", data);
-
-        data.forEach((row) => {
-          // Hämta Latitud/Longitud, försök rensa mellanslag
-          const lat = parseFloat(row["Latitud"]?.trim());
-          const lon = parseFloat(row["Longitud"]?.trim());
-
-          if (!isNaN(lat) && !isNaN(lon)) {
-            const images = [];
-            if (row["image link 1"]) images.push(row["image link 1"].trim());
-            if (row["image link 2"]) images.push(row["image link 2"].trim());
-            if (row["image link 3"]) images.push(row["image link 3"].trim());
-
-            const imageHtml = images
-              .map(
-                (url) =>
-                  `<img src="${url}" alt="Bild på plats" onerror="this.style.display='none'" />`
-              )
-              .join("");
-
-            const popup = `
-              <div class="popup-content">
-                <strong>${row["Namn"] || "Namnlös plats"}</strong><br>
-                <em>${row["Län"] || ""}</em><br>
-                <em>${row["Latitud"] || ""}</em><br>
-                <em>${row["Longitud"] || ""}</em><br>
-                <em>${row["Faciliteter"] || ""}</em><br>
-               <em>${row["image link 1"] || ""}</em><br> 
-                <p>${row["Beskrivning"] || ""}</p>
-                <strong>cost:</strong> ${
-                  row["Kostar det något att stå här? Om JA skriv summa under alternativ \"annat\""] || "Nej"
-                }<br>
-                <a href="${row["Länk till Google Maps"] || "#"}" target="_blank" rel="noopener">Visa på Google Maps</a><br>
-              
-                  row["Hur långt bort ligger närmsta mataffär?"] || "Okänt"
-                }<br>
-                <em>${row["image link 2"] || ""}</em><br> 
-                <em>${row["image link 3"] || ""}</em><br> 
-                <div class="popup-images">${imageHtml}</div>
-              </div>
-            `;
-
-            L.marker([lat, lon])
-              .addTo(map)
-              .bindPopup(popup);
-          } else {
-            console.warn("Ogiltiga koordinater för rad:", row);
-          }
+          L.marker([place.lat, place.lng])
+            .addTo(map)
+            .bindPopup(popup);
         });
-      },
-      simpleSheet: true,
-      debug: true,
-    });
+      })
+      .catch(err => {
+        console.error('Fel vid hämtning av data:', err);
+      });
   </script>
 </body>
 </html>

@@ -1,76 +1,92 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Fritältningsplatser i Sverige</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-+NcazgiH7zzGcGPlD5HSSzXH+kSzHj6wz8aZfX3k4nE="
-    crossorigin=""
-  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
   <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      height: 100%;
+    }
+
+    nav {
+      background-color: #2c3e50;
+      padding: 10px;
+      text-align: center;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 15px;
+      font-size: 18px;
+    }
+
     #map {
-      height: 100vh;
+      height: calc(100vh - 50px);
       width: 100%;
     }
-    .popup-images img {
-      max-width: 100%;
-      height: auto;
-      margin-top: 5px;
+
+    .popup-content {
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .popup-content strong {
+      display: block;
+      margin-bottom: 5px;
     }
   </style>
 </head>
 <body>
+
   <nav>
-  <a href="index.html">Karta</a>
-  <a href="about.html">Om</a>
-</nav>
+    <a href="index.html">Karta</a>
+    <a href="about.html">Om</a>
+  </nav>
+
   <div id="map"></div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-o9N1j6kQoy0WLKqz93m+nUvNcIPuOHZ2Iyb7fLKmQzU=" crossorigin=""></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    const sheetUrl = "AKfycbxWRGKLn-msMKHcMwPKKKT2iPla9PxgpwUIiDJTQHVPcjK4ak9mXvaNLXn8r73jcIfQ"; // Ersätt med din Apps Script URL
-
-    const map = L.map('map').setView([62.0, 15.0], 5); // Centralt i Sverige
+    const map = L.map('map').setView([62.0, 15.0], 5);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap-bidragsgivare'
+      maxZoom: 18,
+      attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    fetch(sheetUrl)
+    fetch("https://script.google.com/macros/s/AKfycbxfNzJaT1WcuvZTY61ym_3me49kqk7b32QMMqcBaOFVkQh2c-6c_9qDNfhXocbqGo889g/exec")
       .then(response => response.json())
       .then(data => {
-        data.forEach(entry => {
-          const lat = parseFloat(entry.latitude);
-          const lng = parseFloat(entry.longitude);
+        data.forEach(place => {
+          const lat = parseFloat(place["Latitud"]);
+          const lng = parseFloat(place["Longitud"]);
           if (!isNaN(lat) && !isNaN(lng)) {
+            const marker = L.marker([lat, lng], { icon: L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png', iconSize: [32, 32], iconAnchor: [16, 32] }) }).addTo(map);
             const popupContent = `
-              <strong>${entry.platsnamn}</strong><br>
-              <em>Län:</em> ${entry.lan}<br>
-              <em>Beskrivning:</em> ${entry.beskrivning}<br>
-              <em>Faciliteter:</em> ${entry.faciliteter}<br>
-              <em>Kostar det?</em> ${entry.kostnad || 'Nej'}<br>
-              ${entry.kostnad_annat ? `<em>Kostnad:</em> ${entry.kostnad_annat} kr<br>` : ""}
-              <em>Närmsta mataffär:</em> ${entry.mataffar || 'Okänt'}<br>
-              ${entry.google_maps_lank ? `<a href="${entry.google_maps_lank}" target="_blank">Visa i Google Maps</a><br>` : ""}
-              <div class="popup-images">
-                ${entry.bild1 ? `<img src="${entry.bild1}" alt="Bild 1" />` : ""}
-                ${entry.bild2 ? `<img src="${entry.bild2}" alt="Bild 2" />` : ""}
-                ${entry.bild3 ? `<img src="${entry.bild3}" alt="Bild 3" />` : ""}
+              <div class="popup-content">
+                <strong>${place["Platsens namn"]}</strong>
+                <p><strong>Län:</strong> ${place["Län"] || "Okänt"}</p>
+                <p><strong>Faciliteter:</strong> ${place["Faciliteter"] || "Ej angivet"}</p>
+                <p><strong>Kostar det att tälta?</strong> ${place["Kostar det att tälta här?"] || "Nej"}</p>
+                <p><strong>Avstånd till närmaste mataffär:</strong> ${place["Avstånd till närmaste mataffär:"] || "Ej angivet"}</p>
+                <p><strong>Beskrivning:</strong> ${place["Beskrivning"] || ""}</p>
+                <p><a href="${place["Länk till google maps"]}" target="_blank">Visa på Google Maps</a></p>
               </div>
             `;
-
-            L.marker([lat, lng])
-              .addTo(map)
-              .bindPopup(popupContent);
+            marker.bindPopup(popupContent);
           }
         });
       })
       .catch(error => {
-        console.error("Fel vid hämtning av data från Google Sheets:", error);
+        console.error("Fel vid hämtning av tältplatser:", error);
       });
   </script>
+
 </body>
 </html>

@@ -70,7 +70,7 @@
             const marker = L.marker([lat, lng], { icon: L.icon({ iconUrl: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png', iconSize: [32, 32], iconAnchor: [16, 32] }) }).addTo(map);
             const popupContent = `
               <div class="popup-content">
-                <strong>${place["Platsens namn"]}</strong>
+                 <p><strong>${place["Platsens namn"]}</strong> </p>
                 <p><strong>Län:</strong> ${place["Län"] || "Okänt"}</p>
                 <p><strong>Faciliteter:</strong> ${place["Faciliteter"] || "Ej angivet"}</p>
                 <p><strong>Kostar det att tälta?</strong> ${place["Kostar det att tälta här?"] || "Nej"}</p>

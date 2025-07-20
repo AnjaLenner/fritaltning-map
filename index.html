@@ -25,16 +25,17 @@
 </head>
 <body>
   <nav style="background:#eee; padding:10px; text-align:center;">
-  <a href="index.html" style="margin:0 15px; text-decoration:none; color:#333;">Hem</a>
-  <a href="about.html" style="margin:0 15px; text-decoration:none; color:#333;">Om</a>
-</nav>
+    <a href="index.html" style="margin:0 15px; text-decoration:none; color:#333;">Hem</a>
+    <a href="about.html" style="margin:0 15px; text-decoration:none; color:#333;">Om</a>
+  </nav>
 
   <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/tabletop@1.6.0/tabletop.js"></script>
   <script>
-    const map = L.map("map").setView([61.5, 15], 5);
+    const map = L.map("map").setView([61.5, 15], 6);
+
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "&copy; OpenStreetMap contributors",
     }).addTo(map);
@@ -45,31 +46,39 @@
       key: sheetID,
       simpleSheet: true,
       callback: function (data) {
+        console.log("Data från Google Sheet:", data);
+
         data.forEach((row) => {
-          const lat = parseFloat(row["Latitud (Exempelvis 60.123456)"]);
-          const lon = parseFloat(row["Longitud (Exempelvis 15.654321)"]);
+          // Hämta lat/lon, försök rensa mellanslag
+          const lat = parseFloat(row["Latitud (Exempelvis 60.123456)"]?.trim());
+          const lon = parseFloat(row["Longitud (Exempelvis 15.654321)"]?.trim());
+
           if (!isNaN(lat) && !isNaN(lon)) {
             const images = [];
-            if (row["Bildlänk 1"]) images.push(row["Bildlänk 1"]);
-            if (row["Bildlänk 2"]) images.push(row["Bildlänk 2"]);
-            if (row["Bildlänk 3"]) images.push(row["Bildlänk 3"]);
+            if (row["Bildlänk 1"]) images.push(row["Bildlänk 1"].trim());
+            if (row["Bildlänk 2"]) images.push(row["Bildlänk 2"].trim());
+            if (row["Bildlänk 3"]) images.push(row["Bildlänk 3"].trim());
 
             const imageHtml = images
               .map(
                 (url) =>
-                  `<img src="${url}" alt="Bild på plats" />`
+                  `<img src="${url}" alt="Bild på plats" onerror="this.style.display='none'" />`
               )
               .join("");
 
             const popup = `
               <div class="popup-content">
-                <strong>${row["Namn på plats"]}</strong><br>
+                <strong>${row["Namn på plats"] || "Namnlös plats"}</strong><br>
                 <em>${row["Län där plats ligger"] || ""}</em><br>
                 <em>${row["Faciliteter"] || ""}</em><br>
                 <p>${row["Beskrivning / Kommentar"] || ""}</p>
-                <strong>Kostnad:</strong> ${row["Kostar det något att stå här? Om JA skriv summa under alternativ \"annat\""] || "Nej"}<br>
-                <a href="${row["Länk till Google Maps"]}" target="_blank" rel="noopener">Visa på Google Maps</a><br>
-                <em>Närmaste mataffär:</em> ${row["Hur långt bort ligger närmsta mataffär?"] || "Okänt"}<br>
+                <strong>Kostnad:</strong> ${
+                  row["Kostar det något att stå här? Om JA skriv summa under alternativ \"annat\""] || "Nej"
+                }<br>
+                <a href="${row["Länk till Google Maps"] || "#"}" target="_blank" rel="noopener">Visa på Google Maps</a><br>
+                <em>Närmaste mataffär:</em> ${
+                  row["Hur långt bort ligger närmsta mataffär?"] || "Okänt"
+                }<br>
                 <div class="popup-images">${imageHtml}</div>
               </div>
             `;
@@ -77,9 +86,13 @@
             L.marker([lat, lon])
               .addTo(map)
               .bindPopup(popup);
+          } else {
+            console.warn("Ogiltiga koordinater för rad:", row);
           }
         });
       },
+      simpleSheet: true,
+      debug: true,
     });
   </script>
 </body>
